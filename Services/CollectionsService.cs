@@ -158,6 +158,10 @@ public class CollectionsService
         throw new Exception("User credentials already exist!");
     }
     
+    // Get user credentials document
+    public async Task<List<Credentials>> GetUserCredentialsAsync(string username) =>
+        await _credentialsCollection.Find(x => x.Username == username).ToListAsync();
+    
     // Deletes credentials document
     public async Task DeleteCredentialsAsync(string username) =>
         await _credentialsCollection.DeleteOneAsync(x => x.Username == username);
