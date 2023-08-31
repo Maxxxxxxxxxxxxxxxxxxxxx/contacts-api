@@ -47,7 +47,7 @@ public class CollectionsService
         Contact contact, 
         string username,
         string subcategory,
-        Category category)
+        string category)
     {
         using (var sessionHandle = await _client.StartSessionAsync())
         {
@@ -120,7 +120,7 @@ public class CollectionsService
     // Saves Contact's ObjectId to specified category/subcategory of UserData
     private async Task SaveContactUser(
         string username, 
-        Category category,
+        string category,
         string subcategory,
         string objectId)
     {

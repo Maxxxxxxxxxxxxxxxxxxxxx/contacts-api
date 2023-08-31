@@ -1,12 +1,13 @@
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Bson.Serialization.Options;
 
 namespace ContactsAPI.Model;
 
 // Nested dictionary type aliases for category/subcategory handling
 // Direct Contact document references are saved as stringed ObjectIds
 using Subcategory = Dictionary<string, List<string>>;
-using ContactsDictionary = Dictionary<Category, Dictionary<string, List<string>>>;
+using ContactsDictionary = Dictionary<string, Dictionary<string, List<string>>>;
 
 // UserData object. Username is unique.
 public class UserData
@@ -15,7 +16,7 @@ public class UserData
     [BsonRepresentation(BsonType.ObjectId)] 
     public string? Id { get; set; }
     
-    [BsonRepresentation(BsonType.Document)] 
+    [BsonDictionaryOptions(DictionaryRepresentation.ArrayOfArrays)]    
     public ContactsDictionary Contacts { get; set; }
     
     public string Username { get; set; }
@@ -25,9 +26,9 @@ public class UserData
         Username = username;
         Contacts = new ContactsDictionary
         {
-            { Category.Business, new Subcategory() },
-            { Category.Private, new Subcategory() },
-            { Category.Other, new Subcategory() }
+            { "Business", new Subcategory() },
+            { "Private", new Subcategory() },
+            { "Other", new Subcategory() }
         };
     }
 

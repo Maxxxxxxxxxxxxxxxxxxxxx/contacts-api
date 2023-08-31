@@ -70,7 +70,7 @@ public class ContactController : Controller
     [HttpPost("user/{username}")]
     public async Task<IActionResult> NewContact(
         [FromRoute] string username,
-        [FromQuery] Category category,
+        [FromQuery] string category,
         [FromQuery] string subcategory,
         [FromBody] AddContactRequest request)
     {
