@@ -26,6 +26,8 @@ public class LoginService
         _tokenLifetime = TimeSpan.FromMinutes(minutes);
     }
 
+    public bool IsUsernameValid(string username) => username.Length > 3 && !username.Contains(' ');
+
     public bool IsPasswordSecure(string password) => _passwordChecker.IsPasswordSecure(password);
 
     public bool IsEmailValid(string email) => EmailValidation.EmailValidator.Validate(email);
@@ -33,14 +35,14 @@ public class LoginService
     public string HashPassword(string password) => PasswordHash.Encrypt.SHA512(password);
 
     // Generates JWT
-    private string GenerateToken(Credentials credentials)
+    public string GenerateToken(Credentials loginCredentials)
     {
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["JWTSettings:Secret"]!));
         var signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
         
         var claims = new[]
         {
-            new Claim(ClaimTypes.NameIdentifier,credentials.Username),
+            new Claim(ClaimTypes.NameIdentifier,loginCredentials.Username),
         };
         
         var token = new JwtSecurityToken(_config["JWTSettings:Issuer"],
@@ -50,6 +52,26 @@ public class LoginService
             signingCredentials: signingCredentials);
 
         return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+
+    public async Task<bool> ValidateLoginCredentials(string username, string password)
+    {
+        try
+        {
+            var result = await _collectionsService.GetUserCredentialsAsync(username);
+            var passwordHash = HashPassword(password);
+
+            if (passwordHash == result.First().PasswordHash)
+            {
+                return true;
+            }
+        }
+        catch (Exception _)
+        {
+            return false;
+        }
+
+        return false;
     }
     
     public async Task RegisterUserAsync(Credentials credentials)
