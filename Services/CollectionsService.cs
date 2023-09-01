@@ -42,30 +42,18 @@ public class CollectionsService
         return contact.Id!;
     }
 
-    // Saves contact to database ensuring that bound UserData document also gets updated
+    /// <summary>
+    /// Saves contact to database ensuring that bound UserData document also gets updated
+    /// </summary>
     public async Task CreateContactAsync(
         Contact contact, 
         string username,
         string subcategory,
         string category)
     {
-        using (var sessionHandle = await _client.StartSessionAsync())
-        {
-            sessionHandle.StartTransaction();
-
-            try
-            {
-                var objId = await SaveContactAsync(contact); // Save contact to directly to db.contacts
-                await SaveContactUser(username, category, subcategory,
-                    objId); // Save contact to appropriate document in db.users
-
-                sessionHandle.CommitTransaction();
-            }
-            catch (Exception e)
-            {
-                sessionHandle.AbortTransaction();
-            }
-        }
+        // todo: change to transaction after I figure out why they don't work
+        var objId = await SaveContactAsync(contact); // Save contact to directly to db.contacts
+        await SaveContactUser(username, category, subcategory, objId); // Save contact to appropriate document in db.users
     }
     
     public async Task UpdateContactAsync(string id, Contact contact) => 
