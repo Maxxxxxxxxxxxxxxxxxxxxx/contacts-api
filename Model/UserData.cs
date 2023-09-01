@@ -9,7 +9,7 @@ namespace ContactsAPI.Model;
 using Subcategory = Dictionary<string, List<string>>;
 using ContactsDictionary = Dictionary<string, Dictionary<string, List<string>>>;
 
-// UserData object. Username is unique.
+// UserData object. Username is unique
 public class UserData
 {
     [BsonId]
@@ -21,6 +21,7 @@ public class UserData
     
     public string Username { get; set; }
     
+    // Constructor pre-populates dictionary with appropriate categories
     public UserData(string username)
     {
         Username = username;

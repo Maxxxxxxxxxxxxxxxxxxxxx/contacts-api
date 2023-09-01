@@ -42,14 +42,16 @@ public class AuthController : Controller
                 Username = request.Username,
                 PasswordHash = _loginService.HashPassword(request.Password),
             };
+            
             try
             {
                 await _loginService.RegisterUserAsync(credentials);
                 var token = _loginService.GenerateToken(credentials);
                 return Ok(token);
             }
-            catch (Exception _)
+            catch (Exception e)
             {
+                Console.WriteLine(e.Message);
                 return StatusCode(422); // User already exists
             }
         }
