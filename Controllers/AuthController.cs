@@ -13,7 +13,7 @@ public class AuthController : Controller
 
     public AuthController(LoginService svc) => _loginService = svc;
     
-    [HttpGet("login")]
+    [HttpPut("login")]
     public async Task<IActionResult> Login([FromBody]AuthRequest request)
     {
         if (!await _loginService.ValidateLoginCredentials(request.Username, request.Password))
@@ -30,11 +30,11 @@ public class AuthController : Controller
         var token = _loginService.GenerateToken(credentials);
         return Ok(token); // returns JWT if login succeded
     }
-    
+
     [HttpPost("register")]
-    public async Task<IActionResult> Register([FromBody]AuthRequest request)
+    public async Task<IActionResult> Register([FromBody] AuthRequest request)
     {
-        if (_loginService.IsPasswordSecure(request.Password) 
+        if (_loginService.IsPasswordSecure(request.Password)
             && _loginService.IsUsernameValid(request.Username))
         {
             var credentials = new Credentials
@@ -42,7 +42,7 @@ public class AuthController : Controller
                 Username = request.Username,
                 PasswordHash = _loginService.HashPassword(request.Password),
             };
-            
+
             try
             {
                 await _loginService.RegisterUserAsync(credentials);
@@ -58,5 +58,4 @@ public class AuthController : Controller
 
         return StatusCode(501); // if somehow fails to register
     }
-    
 }
