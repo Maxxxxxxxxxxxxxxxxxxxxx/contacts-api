@@ -1,5 +1,4 @@
 using ContactsAPI.Bodies;
-using ContactsAPI.Model;
 using ContactsAPI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,33 +10,36 @@ namespace ContactsAPI.Controllers;
 public class ContactController : Controller
 {
     private readonly CollectionsService _collectionsService;
-    private readonly LoginService _loginService;
 
     public ContactController(CollectionsService svc) => _collectionsService = svc;
 
     // gets Contact by ID
     [HttpGet("{id:length(24)}")]
-    public async Task<IActionResult> Get([FromRoute]string id)
+    public async Task<IActionResult> Get([FromRoute] string id)
     {
         var contactObject = await _collectionsService.GetContactAsync(id);
         return Ok(contactObject);
     }
-    
+
     // gets all Contacts
+    // returns only truncated contacts data, (Id, Name, Surname)
     [HttpGet()]
     public async Task<IActionResult> Get()
     {
-        var contactObject = await _collectionsService.GetContactAsync();
-        return Ok(contactObject);
+        var response = await _collectionsService.GetAbbreviatedContactList();
+        return Ok(response);
     }
-    
+
     // gets all Contacts of specified User
     [HttpGet("user/{username}")]
     public async Task<IActionResult> GetUsersContacts([FromRoute]string username)
     {
         var list = await _collectionsService.GetUserData(username);
-        var userObj = list.First();
-        return Ok(userObj.Contacts);
+        var ids = list.First().GetContactIds();
+
+        var response = await _collectionsService.GetContactsFilter(x => ids.Contains(x.Id));
+        
+        return Ok(response);
     }
     
     // ***********************
@@ -52,7 +54,7 @@ public class ContactController : Controller
         [FromBody] UpdateContactRequest request)
     {
         var contactToUpdate = await _collectionsService.GetContactAsync(id);
-        var updatedContact = request.Apply(contactToUpdate.First());
+        var updatedContact = request.Apply(contactToUpdate);
 
         try
         {
@@ -75,9 +77,8 @@ public class ContactController : Controller
         [FromBody] AddContactRequest request)
     {
         var newContact = request.MapToContact();
-        // await _collectionsService.SaveContactAsync(newContact);
+        await _collectionsService.CreateContactAsync(newContact, username, subcategory, category);
         
-        // todo
         return Ok();
     }
 }
