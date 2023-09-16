@@ -31,18 +31,32 @@ builder.Services.AddAuthentication(x =>
     };
 });
 
+var CorsOrigins = "_origins";
+
 // mounting remaining services to the app
 builder.Services.Configure<MongoSettings>(config.GetSection("Mongo"));
 builder.Services.AddSingleton<CollectionsService>();
 builder.Services.AddSingleton<LoginService>();
 builder.Services.AddSingleton(config);
 builder.Services.AddControllersWithViews();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: CorsOrigins,
+        policy  =>
+        {
+            policy.WithOrigins("http://localhost:5173")
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+});
+
 
 var app = builder.Build();
 
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+app.UseCors(CorsOrigins);
 
 // app.MapGet("/", () => "Hello World!");
 app.Run();
