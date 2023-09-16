@@ -1,5 +1,7 @@
+using System.Linq.Expressions;
 using ContactsAPI.Config;
 using ContactsAPI.Model;
+using ContactsAPI.Model.Abbreviated;
 using MongoDB.Driver;
 using Microsoft.Extensions.Options;
 
@@ -28,12 +30,38 @@ public class CollectionsService
     // *****************
     // Contact methods 
     // *****************
+
+    public async Task<List<ContactAbbreviated>> GetAbbreviatedContactList()
+    {
+        var findOptions = new FindOptions<Contact>
+        {
+            Projection = Builders<Contact>.Projection
+                .Include("_id")
+                .Include("Name")
+                .Include("Surname")
+        };
+
+        var cursor = await _contactsCollection.FindAsync(x => true, findOptions);
+        var list = await cursor.ToListAsync();
+
+        var values = list.Select(contact => new ContactAbbreviated()
+        {
+            Id = contact.Id,
+            Name = contact.Name,
+            Surname = contact.Surname
+        }).ToList();
+
+        return values;
+    }
     
     public async Task<List<Contact>> GetContactAsync() => 
         await _contactsCollection.Find(_ => true).ToListAsync();
     
-    public async Task<List<Contact>> GetContactAsync(string id) => 
-        await _contactsCollection.Find( x => x.Id == id).ToListAsync();
+    public async Task<Contact> GetContactAsync(string id) => 
+        await _contactsCollection.Find( x => x.Id == id).SingleAsync();
+    
+    public async Task<List<Contact>> GetContactsFilter(Expression<Func<Contact, bool>> filter) => 
+        await _contactsCollection.Find(filter).ToListAsync();
 
     // Saves just the contact to db.contacts and returns ObjectId
     private async Task<string> SaveContactAsync(Contact contact)
