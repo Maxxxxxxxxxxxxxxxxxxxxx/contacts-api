@@ -6,7 +6,7 @@ namespace ContactsAPI.Model.Abbreviated;
 // Abbreviated form of Contact entity,
 // for use when you want to extract
 // a partial overview of the document
-public record ContactAbbreviated()
+public record ContactDTO()
 {
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]

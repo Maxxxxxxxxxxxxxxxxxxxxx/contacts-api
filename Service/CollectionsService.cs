@@ -31,7 +31,7 @@ public class CollectionsService
     // Contact methods 
     // *****************
 
-    public async Task<List<ContactAbbreviated>> GetAbbreviatedContactList()
+    public async Task<List<ContactDTO>> GetAbbreviatedContactList()
     {
         var findOptions = new FindOptions<Contact>
         {
@@ -44,7 +44,7 @@ public class CollectionsService
         var cursor = await _contactsCollection.FindAsync(x => true, findOptions);
         var list = await cursor.ToListAsync();
 
-        var values = list.Select(contact => new ContactAbbreviated()
+        var values = list.Select(contact => new ContactDTO()
         {
             Id = contact.Id,
             Name = contact.Name,
