@@ -13,13 +13,13 @@
       <PackageReference Include="MongoDB.Driver" Version="2.21.0" />
       <PackageReference Include="PasswordHash" Version="1.1.0" />
       <PackageReference Include="PasswordStringChecker" Version="1.0.0" />
-      <PackageReference Include="xunit" Version="2.6.4" />
-
-
-
     </ItemGroup>
-
-
-
-
+    
+    <ItemGroup>
+        <InternalsVisibleTo Include="ContactsAPI.IntegrationTests" />
+    </ItemGroup>
+    
+    <ItemGroup>
+      <None Include="appsettings.TestOverrides.json" />
+    </ItemGroup>
 </Project>
