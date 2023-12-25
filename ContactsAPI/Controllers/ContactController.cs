@@ -47,7 +47,7 @@ public class ContactController : Controller
     // ***********************
 
     // Update Contact
-    [Authorize]
+    // [Authorize]
     [HttpPut("{id:length(24)}")]
     public async Task<IActionResult> UpdateContact(
         [FromRoute] string id,
@@ -68,7 +68,7 @@ public class ContactController : Controller
     }
     
     // Add new contact, category/subcategory specified with query parameters
-    [Authorize]
+    // [Authorize]
     [HttpPost("user/{username}")]
     public async Task<IActionResult> NewContact(
         [FromRoute] string username,
