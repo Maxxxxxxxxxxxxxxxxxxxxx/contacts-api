@@ -16,3 +16,8 @@
 appsettings.json
 bin/
 obj/
+
+.idea/
+ContactsAPI.sln.DotSettings.user
+
+packages/
