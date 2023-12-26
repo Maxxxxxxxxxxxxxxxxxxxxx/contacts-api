@@ -15,7 +15,11 @@ startup.ConfigureMongo(builder.Services);
 
 var app = builder.Build();
 
+
 startup.Configure(app, app.Environment);
+
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.MapControllers();
 

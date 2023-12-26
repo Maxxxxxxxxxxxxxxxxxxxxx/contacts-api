@@ -13,6 +13,7 @@
       <PackageReference Include="MongoDB.Driver" Version="2.21.0" />
       <PackageReference Include="PasswordHash" Version="1.1.0" />
       <PackageReference Include="PasswordStringChecker" Version="1.0.0" />
+      <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     </ItemGroup>
     
     <ItemGroup>

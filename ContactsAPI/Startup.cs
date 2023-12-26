@@ -48,6 +48,8 @@ public class Startup
         
         var CorsOrigins = "_origins";
 
+        services.AddSwaggerGen();
+
         // mounting remaining services to the app
         services.AddSingleton<CollectionsService>();
         services.AddSingleton<LoginService>();
