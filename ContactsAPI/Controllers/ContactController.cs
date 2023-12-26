@@ -17,37 +17,32 @@ public class ContactController : Controller
     [HttpGet("{id:length(24)}")]
     public async Task<IActionResult> Get([FromRoute] string id)
     {
-        var contactObject = await _collectionsService.GetContactAsync(id);
-        return Ok(contactObject);
+        try
+        {
+            var contactObject = await _collectionsService.GetContactAsync(id);
+            return Ok(contactObject);
+        }
+        catch (Exception)
+        {
+            return NotFound();
+        }
     }
 
     // gets all Contacts
-    // returns only truncated contacts data, (Id, Name, Surname)
     [HttpGet()]
     public async Task<IActionResult> Get()
     {
-        var response = await _collectionsService.GetAbbreviatedContactList();
-        return Ok(response);
-    }
-
-    // gets all Contacts of specified User
-    [HttpGet("user/{username}")]
-    public async Task<IActionResult> GetUsersContacts([FromRoute]string username)
-    {
-        var list = await _collectionsService.GetUserData(username);
-        var ids = list.First().GetContactIds();
-
-        var response = await _collectionsService.GetContactsFilter(x => ids.Contains(x.Id));
-        
-        return Ok(response);
+        try
+        {
+            var response = await _collectionsService.GetContactsFilter(c => true);
+            return Ok(response);
+        }
+        catch (Exception)
+        {
+            return NotFound();
+        }
     }
     
-    // ***********************
-    // Auth-required endpoints
-    // ***********************
-
-    // Update Contact
-    // [Authorize]
     [HttpPut("{id:length(24)}")]
     public async Task<IActionResult> UpdateContact(
         [FromRoute] string id,
@@ -56,29 +51,16 @@ public class ContactController : Controller
         var contactToUpdate = await _collectionsService.GetContactAsync(id);
         var updatedContact = request.Apply(contactToUpdate);
 
-        try
-        {
-            await _collectionsService.UpdateContactAsync(id, updatedContact);
-            return Ok();
-        }
-        catch (Exception _)
-        {
-            return StatusCode(422);
-        }
+        await _collectionsService.UpdateContactAsync(id, updatedContact);
+        return Ok(updatedContact);
     }
     
-    // Add new contact, category/subcategory specified with query parameters
-    // [Authorize]
-    [HttpPost("user/{username}")]
+    [HttpPost("")]
     public async Task<IActionResult> NewContact(
-        [FromRoute] string username,
-        [FromQuery] string category,
-        [FromQuery] string subcategory,
         [FromBody] AddContactRequest request)
     {
         var newContact = request.MapToContact();
-        await _collectionsService.CreateContactAsync(newContact, username, subcategory, category);
-        
-        return Ok();
+        await _collectionsService.SaveContactAsync(newContact);
+        return Ok(newContact);
     }
 }

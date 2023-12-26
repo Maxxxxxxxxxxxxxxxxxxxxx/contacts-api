@@ -14,32 +14,32 @@ public class Startup
     }
 
     public IConfiguration config { get; }
-    
-    public void ConfigureAuth(IServiceCollection services)
-    {
-        services.AddAuthentication(x =>
-        {
-            x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        }).AddJwtBearer(x =>
-        {
-            x.TokenValidationParameters = new TokenValidationParameters
-            {
-                ValidIssuer = config["JWTSettings:Issuer"],
-                ValidAudience = config["JWTSettings:Audience"],
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["JWTSettings:Secret"]!)),
-                ValidateIssuer = config.GetValue<bool>("JWTSettings:ValidateIssuer"),
-                ValidateAudience = config.GetValue<bool>("JWTSettings:ValidateAudience"),
-                ValidateLifetime = config.GetValue<bool>("JWTSettings:ValidateLifetime"),
-                ValidateIssuerSigningKey = config.GetValue<bool>("JWTSettings:ValidateIssuerSigningKey"),
-            };
-        });
-    }
 
     public void ConfigureMongo(IServiceCollection services)
     {
-        services.Configure<MongoSettings>(config.GetSection("Mongo"));
+        var envPort = config.GetValue<int>("MONGO_PORT");
+        var envHost = config["MONGO_HOST"];
+        
+        // Console.WriteLine($"mongodb://{envHost}:{envPort}");
+
+        if (envPort != 0 && envHost != null)
+        {
+            MongoSettings settings = new MongoSettings($"mongodb://{envHost}:{envPort}");
+            
+            services.AddSingleton(settings);
+            services.AddOptions<MongoSettings>().Configure(options =>
+            {
+                options.DatabaseName = settings.DatabaseName;
+                options.AccountCollection = settings.AccountCollection;
+                options.ContactCollection = settings.ContactCollection;
+                options.CredentialsCollection = settings.CredentialsCollection;
+                options.ConnectionString = settings.ConnectionString;
+            });
+        }
+        else
+        {
+            services.Configure<MongoSettings>(config.GetSection("Mongo"));
+        }
     }
 
     public void ConfigureWebServices(IServiceCollection services)
@@ -52,7 +52,6 @@ public class Startup
 
         // mounting remaining services to the app
         services.AddSingleton<CollectionsService>();
-        services.AddSingleton<LoginService>();
         services.AddSingleton(config);
         services.AddControllersWithViews();
         services.AddCors(options =>
@@ -72,24 +71,5 @@ public class Startup
         app.UseAuthentication();
         app.UseAuthorization();
         app.UseCors("_origins");
-
-        // app.UseRouting();
-        
-        // app.UseEndpoints(endpoints =>
-        // {
-        //     // Map AuthController to api/auth
-        //     endpoints.MapControllerRoute(
-        //         name: "auth",
-        //         pattern: "api/auth/",
-        //         defaults: new { controller = "Auth" }
-        //     );
-        //
-        //     // Map ContactController to api/contact
-        //     endpoints.MapControllerRoute(
-        //         name: "contact",
-        //         pattern: "api/contact/",
-        //         defaults: new { controller = "Contact" }
-        //     );
-        // });
     }
 }
