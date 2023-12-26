@@ -4,12 +4,12 @@ namespace ContactsAPI.Bodies;
 
 public record AddContactRequest
 {
-    private string Name { get; set; }
-    private string Surname { get; set; }
-    private string Email { get; set; }
-    private string Password { get; set; }
-    private string PhoneNumber { get; set; }
-    private string DateOfBirth { get; set; }
+    public string Name { get; set; }
+    public string Surname { get; set; }
+    public string Email { get; set; }
+    public string Password { get; set; }
+    public string PhoneNumber { get; set; }
+    public string DateOfBirth { get; set; }
 
     public AddContactRequest(string name, string surname, string email, string password, string phoneNumber, string dateOfBirth)
     {
