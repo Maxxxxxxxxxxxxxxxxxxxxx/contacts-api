@@ -11,6 +11,16 @@ public record AddContactRequest
     public string PhoneNumber { get; set; }
     public string DateOfBirth { get; set; }
 
+    public AddContactRequest(string name, string surname, string email, string password, string phoneNumber, string dateOfBirth)
+    {
+        Name = name;
+        Surname = surname;
+        Email = email;
+        Password = password;
+        PhoneNumber = phoneNumber;
+        DateOfBirth = dateOfBirth;
+    }
+
     public Contact MapToContact()
     {
         var entity = new Contact

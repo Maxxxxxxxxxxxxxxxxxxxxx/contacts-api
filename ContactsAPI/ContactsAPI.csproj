@@ -4,6 +4,7 @@
         <TargetFramework>net7.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     </PropertyGroup>
 
     <ItemGroup>
@@ -13,10 +14,20 @@
       <PackageReference Include="MongoDB.Driver" Version="2.21.0" />
       <PackageReference Include="PasswordHash" Version="1.1.0" />
       <PackageReference Include="PasswordStringChecker" Version="1.0.0" />
-
+      <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     </ItemGroup>
-
-
-
-
+    
+    <ItemGroup>
+        <InternalsVisibleTo Include="ContactsAPI.IntegrationTests" />
+    </ItemGroup>
+    
+    <ItemGroup>
+      <None Include="appsettings.TestOverrides.json" />
+    </ItemGroup>
+    
+    <ItemGroup>
+      <Content Include="..\.dockerignore">
+        <Link>.dockerignore</Link>
+      </Content>
+    </ItemGroup>
 </Project>

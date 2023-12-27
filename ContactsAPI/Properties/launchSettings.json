@@ -14,7 +14,9 @@
       "launchBrowser": true,
       "applicationUrl": "http://localhost:8080",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "MONGO_PORT": 27017,
+        "MONGO_HOST": "localhost"
       }
     },
     "https": {
