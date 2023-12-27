@@ -9,25 +9,23 @@ public class ContactControllerTests
 {
     // private readonly HttpClient _client;
 
-    // [Fact]
-    // public async Task Contact_AddContact_Register()
-    // {
-    //     var app = new ContactsApiApplicationFactory();
-    //     var username = "TestUser";
-    //     var userPassword = "P@ssw0rd";
-    //
-    //     AuthRequest register = new AuthRequest(username, userPassword);
-    //     AddContactRequest req = new("Imie", "Nazwisko", "imie.nazwisko@email.com", "P@ssw0rd", "666921420",
-    //         "2001-04-01");
-    //     
-    //     var client = app.CreateClient();
-    //     var response = await client.PostAsJsonAsync($"/api/contact/{username}", req);
-    //     response.EnsureSuccessStatusCode();
-    //
-    //     var contact = await response.Content.ReadFromJsonAsync<Contact>();
-    //
-    //     Assert.NotNull(contact);
-    // }
+    [Fact]
+    public async Task Contact_AddContact_Register()
+    {
+        var app = new ContactsApiApplicationFactory();
+
+        AddContactRequest req = new("TestUser", "Surname", "email@e.com", "P@ssw0rd", "777000111", "2001-01-01");
+        
+        var client = app.CreateClient();
+        var response = await client.PostAsJsonAsync($"/api/contact/", req);
+        
+        response.EnsureSuccessStatusCode();
+    
+        var contact = await response.Content.ReadFromJsonAsync<Contact>();
+    
+        Assert.NotNull(contact);
+        Assert.Equal(contact.Name, req.Name);
+    }
     
     [Fact]
     public async Task Contact_TestGet()
